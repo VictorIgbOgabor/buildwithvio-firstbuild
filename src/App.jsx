@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from "react";
 
 export default function BuildWithVioLanding() {
   const canvasRef = useRef(null);
+  const now = new Date();
+  const isNewMonth = now.getMonth() === 3 && now.getDate() <= 3;
+  const [showSplash, setShowSplash] = useState(isNewMonth);
   const [step, setStep] = useState("hero");
   const [inputVal, setInputVal] = useState("");
   const [aiResponse, setAiResponse] = useState("");
@@ -72,7 +75,7 @@ export default function BuildWithVioLanding() {
     try {
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
         body: JSON.stringify({
           model: "claude-sonnet-4-20250514",
           max_tokens: 1000,
@@ -103,6 +106,36 @@ export default function BuildWithVioLanding() {
   };
 
   const isResponseVisible = step === "response" || step === "form" || step === "done";
+
+  if (showSplash) {
+    return (
+      <div style={{ position: "relative", minHeight: "100vh", background: "#080808", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden", padding: "24px 20px", fontFamily: "'JetBrains Mono', monospace" }}>
+        <canvas ref={canvasRef} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0.55 }} />
+        <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", maxWidth: "560px" }}>
+          <div style={{ fontSize: "72px", marginBottom: "8px", animation: "floatUp 1s ease forwards" }}>🎉</div>
+          <p style={{ color: "rgba(255,107,0,0.7)", fontSize: "11px", letterSpacing: "4px", textTransform: "uppercase", marginBottom: "16px" }}>April 2026</p>
+          <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(52px, 13vw, 96px)", color: "#FF6B00", lineHeight: 0.9, margin: "0 0 12px", textShadow: "0 0 80px rgba(255,107,0,0.3)" }}>
+            Happy New<br />Month
+          </h1>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px", letterSpacing: "2px", lineHeight: "2", margin: "20px 0 40px" }}>
+            April is a new page.<br />
+            Make it count. Build something real.
+          </p>
+          <div style={{ width: "100%", height: "1px", background: "linear-gradient(90deg, transparent, rgba(255,107,0,0.5), rgba(0,102,255,0.5), transparent)", marginBottom: "40px" }} />
+          <button
+            onClick={() => setShowSplash(false)}
+            style={{ background: "#FF6B00", color: "#000", border: "none", padding: "16px 40px", fontSize: "12px", fontFamily: "'JetBrains Mono', monospace", fontWeight: "700", letterSpacing: "3px", cursor: "pointer", textTransform: "uppercase" }}
+          >
+            Let us Build
+          </button>
+          <p style={{ color: "rgba(255,255,255,0.15)", fontSize: "10px", letterSpacing: "2px", marginTop: "40px" }}>BUILDWITHVIO . BY VICTOR OGABOR</p>
+        </div>
+        <style>{`
+          @keyframes floatUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        `}</style>
+      </div>
+    );
+  }
 
   return (
     <div style={{ position: "relative", minHeight: "100vh", background: "#080808", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden", padding: "24px 20px", fontFamily: "'JetBrains Mono', monospace" }}>
