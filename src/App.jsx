@@ -1,4 +1,18 @@
 import { useState, useEffect, useRef } from "react";
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBitjQdgwlfsRcBgEHWncr6AXDl6r2X25w",
+  authDomain: "vio-assistant-a8528.firebaseapp.com",
+  projectId: "vio-assistant-a8528",
+  storageBucket: "vio-assistant-a8528.firebasestorage.app",
+  messagingSenderId: "200802733203",
+  appId: "1:200802733203:web:fb3a16724f6193769c1166"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 export default function BuildWithVioLanding() {
   const canvasRef = useRef(null);
@@ -96,11 +110,12 @@ export default function BuildWithVioLanding() {
   const handleJoin = async () => {
     if (!name.trim() || !whatsapp.trim()) return;
     try {
-      await window.storage.set(
-        `lead:${Date.now()}`,
-        JSON.stringify({ name, whatsapp, project: inputVal, time: new Date().toISOString() }),
-        true
-      );
+      await addDoc(collection(db, "firstbuild-leads"), {
+        name,
+        whatsapp,
+        project: inputVal,
+        time: new Date().toISOString()
+      });
     } catch {}
     setStep("done");
   };
